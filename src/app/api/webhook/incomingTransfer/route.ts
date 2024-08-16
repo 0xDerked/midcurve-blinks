@@ -13,6 +13,6 @@ export const POST = async (req: Request) => {
 
     const body = await req.json()
     console.log(body)
-    console.log('native transfers', body.nativeTransfers)
+    console.log('native transfers', body[0].nativeTransfers)
     return NextResponse.json({ message: 'Incoming transfer handled' }, { status: 200 })
 }
