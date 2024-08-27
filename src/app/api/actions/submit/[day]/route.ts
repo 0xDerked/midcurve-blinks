@@ -1,5 +1,11 @@
-import { ACTIONS_CORS_HEADERS, ActionGetResponse, ActionPostRequest } from '@solana/actions'
-import { Transaction } from '@solana/web3.js'
+import { getQuestionData } from '@/app/api/utils/database'
+import {
+    ACTIONS_CORS_HEADERS,
+    ActionGetResponse,
+    ActionPostRequest,
+    createPostResponse,
+} from '@solana/actions'
+import { PublicKey, Transaction } from '@solana/web3.js'
 
 interface SubmitParams {
     day: string
@@ -16,13 +22,15 @@ interface SubmitParams {
 */
 
 export const GET = async (req: Request, { params }: { params: SubmitParams }) => {
-    const { day } = params
+    const { day, ref } = params
+    const questionData = await getQuestionData(parseInt(day))
 
     const payload: ActionGetResponse = {
         icon: new URL('/midcurvememe.png', new URL(req.url).origin).toString(),
-        label: 'Submit answer for day ' + day,
-        description: 'Send memo actions example',
-        title: 'Send Memo Demo',
+        label: 'Submit answer for day ' + day + ' on ' + questionData.day,
+        description: questionData.question,
+        title: 'Midcurve Example',
+        type: 'action',
     }
 
     return Response.json(payload, { headers: ACTIONS_CORS_HEADERS })
@@ -32,6 +40,9 @@ export const GET = async (req: Request, { params }: { params: SubmitParams }) =>
     Need to use drand here to encrypt and set up the transfers to the different addresses
     Save the encrypted data to the db with the submitter's address and a confirmed flag of false
     Validate addresses to send to
+
+    make sure to validate answer time hasn't expired again, because get request could be stale
+
 */
 
 export const POST = async (req: Request) => {
@@ -43,7 +54,15 @@ export const POST = async (req: Request) => {
     //save to db
     //structure tx to send sol to the different addresses
     const body: ActionPostRequest = await req.json()
+    let account: PublicKey
+    try {
+        account = new PublicKey(body.account)
+    } catch (e) {
+        return Response.json({ error: 'Invalid account provided' }, { status: 400 })
+    }
     const tx = new Transaction()
 }
+
+const validateQueryParams = (requestUrl: URL) => {}
 
 export const OPTIONS = GET
