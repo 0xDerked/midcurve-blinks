@@ -9,11 +9,6 @@ import { PublicKey, Transaction } from '@solana/web3.js'
 
 const headers = createActionHeaders()
 
-interface SubmitParams {
-    day: string
-    ref?: string
-}
-
 /* 
     Get the day info from the db, question, etc.
     Provide action box to submit the answer
@@ -21,8 +16,10 @@ interface SubmitParams {
     File pathing system for the picture or from db as well?
 */
 
-export const GET = async (req: Request, { params }: { params: SubmitParams }) => {
-    const { day, ref } = params
+export const GET = async (req: Request, { params }: { params: { day: string } }) => {
+    const { day } = params
+    const url = new URL(req.url)
+    const ref = url.searchParams.get('ref')
     const questionData = await getQuestionData(parseInt(day))
 
     if (questionData.expired) {
