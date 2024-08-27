@@ -14,6 +14,8 @@ interface QuestionData {
     timestamp_end: number
 }
 
+//TODO: fix this to be better about errors and non existent days
+
 export const getQuestionData = async (day: number): Promise<QuestionData> => {
     try {
         const { data, error } = await supabase

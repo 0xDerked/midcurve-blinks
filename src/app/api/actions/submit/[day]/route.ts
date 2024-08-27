@@ -1,18 +1,18 @@
 import { getQuestionData } from '@/app/api/utils/database'
 import {
-    ACTIONS_CORS_HEADERS,
     ActionGetResponse,
     ActionPostRequest,
     createPostResponse,
+    createActionHeaders,
 } from '@solana/actions'
 import { PublicKey, Transaction } from '@solana/web3.js'
+
+const headers = createActionHeaders()
 
 interface SubmitParams {
     day: string
     ref?: string
 }
-
-//sends the blink to the user, no information has been sent from the user yet
 
 /* 
     Get the day info from the db, question, etc.
@@ -25,15 +25,43 @@ export const GET = async (req: Request, { params }: { params: SubmitParams }) =>
     const { day, ref } = params
     const questionData = await getQuestionData(parseInt(day))
 
+    if (questionData.expired) {
+        return Response.json(
+            { error: 'Answer time has expired for this question' },
+            { status: 400 },
+        )
+    }
+
+    let baseHref = '/api/actions/submit/' + day
+    const separator = ref ? '&' : '?'
+    if (ref) {
+        baseHref += '?ref=' + ref
+    }
+
     const payload: ActionGetResponse = {
         icon: new URL('/midcurvememe.png', new URL(req.url).origin).toString(),
-        label: 'Submit answer for day ' + day + ' on ' + questionData.day,
+        label: 'Submit Answer , ref is ' + ref,
         description: questionData.question,
-        title: 'Midcurve Example',
+        title: 'Midcurve Question ' + day + ' on ' + questionData.day,
+        links: {
+            actions: [
+                {
+                    href: `${baseHref}${separator}answer={answer}`,
+                    label: 'Submit Answer',
+                    parameters: [
+                        {
+                            name: 'answer',
+                            label: 'Enter your answer',
+                            required: true,
+                        },
+                    ],
+                },
+            ],
+        },
         type: 'action',
     }
 
-    return Response.json(payload, { headers: ACTIONS_CORS_HEADERS })
+    return Response.json(payload, { headers })
 }
 
 /* 
