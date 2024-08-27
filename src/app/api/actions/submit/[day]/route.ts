@@ -40,8 +40,8 @@ export const GET = async (req: Request, { params }: { params: SubmitParams }) =>
 
     const payload: ActionGetResponse = {
         icon: new URL('/midcurvememe.png', new URL(req.url).origin).toString(),
-        label: 'Submit Answer , ref is ' + ref,
-        description: questionData.question,
+        label: 'Submit Answer',
+        description: questionData.question + ' ref is ' + ref,
         title: 'Midcurve Question ' + day + ' on ' + questionData.day,
         links: {
             actions: [
