@@ -76,6 +76,7 @@ export const POST = async (req: Request, { params }: { params: { day: string } }
     const ref = url.searchParams.get('ref')
 
     //TODO: validate day info again, expiry etc.
+    //TODO: handle resubmission ???
     //encrypt the data and save to db with confirmed flag false
 
     const rpc_url = process.env.RPC_URL
@@ -96,7 +97,7 @@ export const POST = async (req: Request, { params }: { params: { day: string } }
 
     const amount = 0.0045 * LAMPORTS_PER_SOL
 
-    const txInstruction = SystemProgram.transfer({
+    const sendToMidcrvInstruction = SystemProgram.transfer({
         fromPubkey: account,
         toPubkey: midcrv,
         lamports: amount,
@@ -108,7 +109,7 @@ export const POST = async (req: Request, { params }: { params: { day: string } }
         feePayer: account,
         blockhash,
         lastValidBlockHeight,
-    }).add(txInstruction)
+    }).add(sendToMidcrvInstruction)
 
     const payload: ActionPostResponse = await createPostResponse({
         fields: {

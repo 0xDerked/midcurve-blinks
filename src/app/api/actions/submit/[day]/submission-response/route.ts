@@ -3,6 +3,7 @@ import {
     createActionHeaders,
     NextActionPostRequest,
     CompletedAction,
+    NextAction,
 } from '@solana/actions'
 
 const headers = createActionHeaders()
@@ -19,12 +20,20 @@ export const POST = async (req: Request, { params }: { params: { day: string } }
         //TODO: A bunch of stuff to validate the transaction and signature
         //TODO: Update the database with the confirmed flag true
 
-        const payload: CompletedAction = {
-            type: 'completed',
+        const payload: NextAction = {
+            type: 'action',
             title: 'Submission successful',
             description: 'Your submission was successful',
             label: 'Complete!',
             icon: new URL('/midcurvememe.png', new URL(req.url).origin).toString(),
+            links: {
+                actions: [
+                    {
+                        href: 'https://x.com/home',
+                        label: 'View on X',
+                    },
+                ],
+            },
         }
         return Response.json(payload, {
             headers,
