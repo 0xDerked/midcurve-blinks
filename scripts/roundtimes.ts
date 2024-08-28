@@ -28,14 +28,17 @@ const addRoundToDb = async (questionNum: number, date: Date, questionDesc: strin
     console.log(date.toISOString().split('T')[0])
 
     try {
-        const { data, error } = await supabase.from('questions').insert({
-            question_num: questionNum,
-            day: date.toISOString().split('T')[0], // YYYY-MM-DD format
-            round,
-            timestamp_start: startOfDay.getTime(),
-            timestamp_end: endOfDay.getTime(),
-            question_desc: questionDesc,
-        })
+        const { data, error } = await supabase
+            .from('questions')
+            .update({
+                question_num: questionNum,
+                day: date.toISOString().split('T')[0], // YYYY-MM-DD format
+                round,
+                timestamp_start: startOfDay.getTime(),
+                timestamp_end: endOfDay.getTime(),
+                question_desc: questionDesc,
+            })
+            .eq('question_num', questionNum)
 
         if (error) throw error
 
@@ -45,4 +48,4 @@ const addRoundToDb = async (questionNum: number, date: Date, questionDesc: strin
     }
 }
 
-addRoundToDb(1, new Date('2024-08-27T00:00:00Z'), 'Ipsum lorem this is a test question')
+addRoundToDb(1, new Date('2024-08-28T00:00:00Z'), 'Ipsum lorem this is a test question')

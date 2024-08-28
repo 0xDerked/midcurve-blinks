@@ -24,7 +24,7 @@ export const POST = async (req: Request, { params }: { params: { day: string } }
             title: 'Submission successful',
             description: 'Your submission was successful',
             label: 'Complete!',
-            icon: '🎉',
+            icon: new URL('/midcurvememe.png', new URL(req.url).origin).toString(),
         }
         return Response.json(payload, {
             headers,
