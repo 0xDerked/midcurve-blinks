@@ -45,3 +45,5 @@ export const getQuestionData = async (day: number): Promise<QuestionData> => {
         throw error
     }
 }
+
+//TODO: Add a function to update the database with the confirmed flag true
