@@ -6,15 +6,13 @@ const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 const supabase = createClient(supabaseUrl!, supabaseKey!)
 
 interface QuestionData {
-    expired: boolean
+    active: boolean
     day: Date
     round: number
     question: string
     timestamp_start: number
     timestamp_end: number
 }
-
-//TODO: fix this to be better about errors and non existent days
 
 export const getQuestionData = async (day: number): Promise<QuestionData> => {
     try {
@@ -26,14 +24,14 @@ export const getQuestionData = async (day: number): Promise<QuestionData> => {
 
         if (error) throw error
 
-        if (!data || !data.timestamp_end) {
-            throw new Error('No expiry time found for the given day')
+        if (!data) {
+            throw new Error('No question data found for the given day')
         }
 
         const currentTime = Date.now()
 
         return {
-            expired: currentTime > data.timestamp_end,
+            active: currentTime > data.timestamp_start && currentTime < data.timestamp_end,
             day: data.day,
             round: data.round,
             question: data.question_desc,
@@ -46,4 +44,50 @@ export const getQuestionData = async (day: number): Promise<QuestionData> => {
     }
 }
 
+export const saveAnswer = async (
+    day: number,
+    encryptedAnswer: string,
+    submittingAddress: string,
+    refAddress: string,
+    signature: string,
+    amountLamports: number,
+) => {
+    try {
+        const { data, error } = await supabase.from('submissions').insert([
+            {
+                timestamp: Date.now(),
+                question_num: day,
+                encrypted_answer: encryptedAnswer,
+                user_pubkey: submittingAddress,
+                ref_pubkey: refAddress,
+                tx_signature: signature,
+                confirmed: false,
+                entry_lamports: amountLamports,
+            },
+        ])
+
+        if (error) throw error
+
+        return data
+    } catch (error) {
+        console.error('Error saving answer:', error)
+        throw error
+    }
+}
+
 //TODO: Add a function to update the database with the confirmed flag true
+export const confirmSubmission = async (signature: string) => {
+    try {
+        const { data, error } = await supabase
+            .from('submissions')
+            .update({ confirmed: true })
+            .eq('tx_signature', signature)
+
+        if (error) throw error
+
+        return data
+    } catch (error) {
+        console.error('Error confirming submission:', error)
+        throw error
+    }
+}

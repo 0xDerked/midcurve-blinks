@@ -3,7 +3,10 @@ import {
     createActionHeaders,
     NextActionPostRequest,
     CompletedAction,
+    NextAction,
+    ActionPostResponse,
 } from '@solana/actions'
+import { clusterApiUrl, Connection } from '@solana/web3.js'
 
 const headers = createActionHeaders()
 
@@ -16,15 +19,23 @@ export const GET = async (req: Request) => {
 
 export const POST = async (req: Request, { params }: { params: { day: string } }) => {
     try {
+        const url = new URL(req.url)
+        const body: NextActionPostRequest = await req.json()
+
+        const signature = body.signature
+
+        const connection = new Connection(process.env.RPC_URL || clusterApiUrl('devnet'))
+        const transaction = await connection.getParsedTransaction(signature)
+
         //TODO: A bunch of stuff to validate the transaction and signature
         //TODO: Update the database with the confirmed flag true
 
         const payload: CompletedAction = {
             type: 'completed',
-            title: 'Submission successful',
-            description: 'Your submission was successful',
-            label: 'Complete!',
             icon: new URL('/midcurvememe.png', new URL(req.url).origin).toString(),
+            title: 'Submission successful',
+            description: 'You have successfully submitted your answer',
+            label: 'Answer Submitted!',
         }
         return Response.json(payload, {
             headers,

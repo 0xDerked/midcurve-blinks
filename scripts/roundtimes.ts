@@ -48,4 +48,4 @@ const addRoundToDb = async (questionNum: number, date: Date, questionDesc: strin
     }
 }
 
-addRoundToDb(1, new Date('2024-08-28T00:00:00Z'), 'Ipsum lorem this is a test question')
+addRoundToDb(1, new Date('2024-09-28T00:00:00Z'), 'Ipsum lorem this is a test question')
