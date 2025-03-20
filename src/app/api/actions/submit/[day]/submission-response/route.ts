@@ -22,7 +22,7 @@ export const POST = async (req: Request, { params }: { params: { day: string } }
         const url = new URL(req.url)
         const body: NextActionPostRequest = await req.json()
 
-        const signature = body.signature
+        const signature = body.signature || ''
 
         const connection = new Connection(process.env.RPC_URL || clusterApiUrl('devnet'))
         const transaction = await connection.getParsedTransaction(signature)

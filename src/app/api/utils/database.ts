@@ -76,6 +76,7 @@ export const saveAnswer = async (
 }
 
 //TODO: Add a function to update the database with the confirmed flag true
+//DON'T HAVE THE SIG YET, NEED A DIFFERENT IDENTIFIER -- pubkey+day??
 export const confirmSubmission = async (signature: string) => {
     try {
         const { data, error } = await supabase

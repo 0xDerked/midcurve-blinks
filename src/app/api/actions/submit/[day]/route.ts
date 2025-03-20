@@ -51,6 +51,7 @@ export const GET = async (req: Request, { params }: { params: { day: string } })
                             required: true,
                         },
                     ],
+                    type: 'transaction',
                 },
             ],
         },
@@ -141,6 +142,7 @@ export const POST = async (req: Request, { params }: { params: { day: string } }
                     href: '/api/actions/submit/' + day + '/submission-response',
                 },
             },
+            type: 'transaction',
         },
     })
 
